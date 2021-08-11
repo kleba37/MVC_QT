@@ -1,7 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 #include <QObject>
-#include "./view.h"
+#include "view.h"
 #include "model.h"
 
 class Controller : public QObject
@@ -9,22 +9,23 @@ class Controller : public QObject
     Q_OBJECT
     Q_PROPERTY(Model* model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(View* view READ view WRITE setView NOTIFY viewChanged)
-    //QObject::connect(this, &Controller::modelChanged, this, &Controller::sizeTo);
-private:
+protected:
     Model* m_model;
     View* m_view;
 
 public:
 //    Controller(Model * model = new Model(), View * view = new View()) : m_view(view), m_model(model){}
-    Controller(Model * model = nullptr, View * view = nullptr) : m_view(view), m_model(model){}
-
-    Model* model() const
-    {
-        return m_model;
+    Controller(){
+        QObject::connect(this, &Controller::modelChanged, this, &Controller::sizeTo);
     }
-    View* view() const
+    ~Controller(){delete this->m_model; delete this->m_view;}
+    Model *model() const
     {
-        return m_view;
+        return this->m_model;
+    }
+    View *view() const
+    {
+        return this->m_view;
     }
 
 public slots:
@@ -46,7 +47,7 @@ public slots:
     }
     void sizeTo(){
         if(this->m_model && this->m_view)
-            this->view->setMinimumSize(this->m_model->getModel()->width(), this->model()->getModel()->height());
+            this->view()->setFixedSize(this->model()->getModel()->width(), this->model()->getModel()->height());
     }
 signals:
     void modelChanged();

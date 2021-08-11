@@ -6,11 +6,16 @@
 class Model : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QRect* model READ getModel WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(QRect* m_model READ getModel WRITE setModel NOTIFY modelChanged)
 private:
     QRect * m_model;
 public:
 Model(QRect *rect = nullptr) : m_model(rect){}
+~Model(){delete this->m_model;}
+bool operator==(Model * model){
+    if(this->m_model == model->m_model) return true;
+    return false;
+}
 QRect * getModel() const
 {
     return m_model;
